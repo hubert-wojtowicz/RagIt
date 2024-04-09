@@ -1,32 +1,28 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using GptApi;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 var host = Host.CreateDefaultBuilder(args)
-    .ConfigureServices(services => { services.AddTransient<Chat>(); })
+    .ConfigureServices((hostContext, services) => 
+    { 
+        services.AddTransient<ConsoleChatService>();
+        services.AddTransient<GptClient>();
+
+        var gptApiConfig = hostContext.Configuration.GetSection("GptApiConfig").Get<GptApiConfig>();
+        services.AddSingleton(gptApiConfig);
+    })
     .ConfigureAppConfiguration((context, config) =>
     {
+        config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
         config.AddUserSecrets<Program>();
+    })
+    .ConfigureLogging((hostContext, logging) =>
+    {
+        logging.AddConsole();
     })
     .Build();
 
-var my = host.Services.GetRequiredService<Chat>();
+var my = host.Services.GetRequiredService<ConsoleChatService>();
 await my.Start();
-
-public class Chat
-{
-    private readonly IConfiguration _cofig;
-
-    public Chat(IConfiguration cofig)
-    {
-        _cofig = cofig;
-    }
-
-    public async Task Start()
-    {
-        string gptApiKey = _cofig["gpt-api-key"];
-        Console.WriteLine($"API Key: {gptApiKey}");
-
-        Thread.Sleep(TimeSpan.MaxValue);
-    }
-}
