@@ -2,21 +2,25 @@
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json;
-using GptApi.Models;
+using GptApi.Models.Chat;
+using GptApi.Models.Embeding;
+using Microsoft.Extensions.Logging;
 
 namespace GptApi;
 
 public class GptClient
 {
     private readonly GptApiConfig _clientConfig;
+    private readonly ILogger<GptClient> _log;
     private static JsonSerializerOptions _serializerSettings = new JsonSerializerOptions
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
-    public GptClient(GptApiConfig clientConfig)
+    public GptClient(GptApiConfig clientConfig, ILogger<GptClient> log)
     {
         _clientConfig = clientConfig;
+        _log = log;
     }
 
     public async Task<GptResponse> Chat(string userPrompt, string? systemPrompt = null)
@@ -25,12 +29,12 @@ public class GptClient
         httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _clientConfig.AuthorizationToken);
 
 
-        var msg = new List<GptRequest>
+        var msg = new List<Chat>
         {
-            new GptUserMessage(userPrompt)
+            new ChatUserMessage(userPrompt)
         };
-        if (systemPrompt != null) msg.Add(new GptSystemMessage(systemPrompt));
-        string json = JsonSerializer.Serialize(new GptChatCompletionsRequest(_clientConfig.UsedModel, msg), _serializerSettings);
+        if (systemPrompt != null) msg.Add(new ChatSystemMessage(systemPrompt));
+        string json = JsonSerializer.Serialize(new ChatCompletionsRequest(_clientConfig.UsedModel, msg), _serializerSettings);
         var content = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
         var response = await httpClient.PostAsync(new Uri(new Uri(_clientConfig.Host), _clientConfig.Endpoits.Chat), content);
 
@@ -41,26 +45,35 @@ public class GptClient
         }
         else
         {
-            // Print error message
-
-            Console.WriteLine($"Error: {response.StatusCode} - {response.ReasonPhrase}");
+            _log.LogError($@"Error: {response.StatusCode} - {response.ReasonPhrase}.");
             var jsonResponse = await response.Content.ReadAsStringAsync();
-            throw new InvalidOperationException(nameof(jsonResponse));  // TODO
+            throw new HttpRequestException(jsonResponse);
         }
-            }
+    }
 
-    public async Task<object> Embedings(string prompt, string model)
+    public async Task<EmbedingResponse> Embedings(string prompt, string model)
     {
         using var httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _clientConfig.AuthorizationToken);
 
         string json = JsonSerializer.Serialize(new
         {
-
+            input = prompt,
+            model
         });
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
-        var response = await httpClient.PostAsync(_clientConfig.Host, content);
+        var content = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
+        var response = await httpClient.PostAsync(new Uri(new Uri(_clientConfig.Host), _clientConfig.Endpoits.Embeddings), content);
 
-        return _clientConfig.UsedModel;
+        if (response.IsSuccessStatusCode)
+        {
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<EmbedingResponse>(jsonResponse) ?? throw new SerializationException(nameof(jsonResponse));
+        }
+        else
+        {
+            _log.LogError($@"Error: {response.StatusCode} - {response.ReasonPhrase}.");
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+            throw new HttpRequestException(jsonResponse);
+        }
     }
 }

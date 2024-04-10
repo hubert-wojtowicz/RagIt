@@ -36,9 +36,10 @@ public class ConsoleChatService
         string prompt = Console.ReadLine() ?? string.Empty;
 
         if (string.IsNullOrWhiteSpace(prompt)) return false;
-        var resp = await _client.Chat(prompt);
-        Console.WriteLine(resp.Choices.First().Message.Content);
-
+        //var resp = await _client.Chat(prompt);
+        //Console.WriteLine(resp.Choices.First().Message.Content);
+        var embeding = await _client.Embedings(prompt, "text-embedding-3-small");
+        var vector = embeding.Data.First().Embedding; // vector count 1536
         return true;
     }
 }
