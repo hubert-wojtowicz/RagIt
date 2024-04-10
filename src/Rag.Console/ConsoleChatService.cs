@@ -8,7 +8,7 @@ public class ConsoleChatService
 
     public ConsoleChatService(
         ILogger<ConsoleChatService> logger,
-        GptClient client        )
+        GptClient client)
     {
         _logger = logger;
         _client = client;
@@ -16,14 +16,29 @@ public class ConsoleChatService
 
     public async Task Start()
     {
-        while (true)
+        bool @continue = true;
+        do
         {
-            Console.Write("> ");
-            string prompt = Console.ReadLine() ?? string.Empty;
+            try
+            {
+                @continue = await Next();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed this time :( ...");
+            }
+        } while (@continue);
+    }
 
-            if (string.IsNullOrWhiteSpace(prompt)) break;
-            var resp = await _client.Chat(prompt);
-            Console.WriteLine(resp.Choices.First().Message.Content);
-        }
+    public async Task<bool> Next()
+    {
+        Console.Write("> ");
+        string prompt = Console.ReadLine() ?? string.Empty;
+
+        if (string.IsNullOrWhiteSpace(prompt)) return false;
+        var resp = await _client.Chat(prompt);
+        Console.WriteLine(resp.Choices.First().Message.Content);
+
+        return true;
     }
 }

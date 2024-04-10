@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace GptApi;
+namespace GptApi.Models;
 
 public record GptResponse(
     [property: JsonPropertyName("id")] string Id,

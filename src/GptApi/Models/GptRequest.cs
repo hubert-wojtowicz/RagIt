@@ -1,4 +1,4 @@
-﻿namespace GptApi;
+﻿namespace GptApi.Models;
 
 public record GptChatCompletionsRequest(string Model, List<GptRequest> Messages);
 
