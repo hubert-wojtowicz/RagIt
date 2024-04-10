@@ -22,13 +22,8 @@ public class ConsoleChatService
             string prompt = Console.ReadLine() ?? string.Empty;
 
             if (string.IsNullOrWhiteSpace(prompt)) break;
-
-            Console.WriteLine(await Chat(prompt));
+            var resp = await _client.Chat(prompt);
+            Console.WriteLine(resp.Choices.First().Message.Content);
         }
-    }
-
-    private Task<string> Chat(string prompt)
-    {
-        return _client.Chat(prompt);
     }
 }
