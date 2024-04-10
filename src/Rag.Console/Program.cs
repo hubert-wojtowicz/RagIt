@@ -5,13 +5,21 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 var host = Host.CreateDefaultBuilder(args)
-    .ConfigureServices((hostContext, services) => 
-    { 
+    .ConfigureServices((hostContext, services) =>
+    {
         services.AddTransient<ConsoleChatService>();
         services.AddTransient<GptClient>();
 
-        var gptApiConfig = hostContext.Configuration.GetSection("GptApiConfig").Get<GptApiConfig>();
-        services.AddSingleton(gptApiConfig);
+        services.AddSingleton(typeof(GptApiConfig), sp =>
+        {
+            var gptApiConfig = hostContext.Configuration.GetSection("GptApiConfig").Get<GptApiConfig>() ?? throw new NullReferenceException(nameof(GptApiConfig));
+            var config = sp.GetService<IConfiguration>() ?? throw new NullReferenceException(nameof(IConfiguration));
+            string token = config["gpt-api-key"] ?? throw new NullReferenceException(nameof(token));
+            gptApiConfig = gptApiConfig with { AuthorizationToken = token };
+
+            return gptApiConfig;
+        });
+
     })
     .ConfigureAppConfiguration((context, config) =>
     {

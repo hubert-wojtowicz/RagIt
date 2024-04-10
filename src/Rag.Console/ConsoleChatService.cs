@@ -1,20 +1,15 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using GptApi;
 
 public class ConsoleChatService
 {
-    private readonly IConfiguration _cofig;
     private readonly ILogger<ConsoleChatService> _logger;
     private readonly GptClient _client;
 
     public ConsoleChatService(
-        IConfiguration cofig,
         ILogger<ConsoleChatService> logger,
-        GptClient client
-        )
+        GptClient client        )
     {
-        _cofig = cofig;
         _logger = logger;
         _client = client;
     }
@@ -24,7 +19,7 @@ public class ConsoleChatService
         while (true)
         {
             Console.Write("> ");
-            string prompt = Console.ReadLine();
+            string prompt = Console.ReadLine() ?? string.Empty;
 
             if (string.IsNullOrWhiteSpace(prompt)) break;
 

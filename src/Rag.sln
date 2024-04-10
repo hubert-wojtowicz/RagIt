@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34309.116
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rag.Console", "Rag.Console\Rag.Console.csproj", "{646D65C6-9B6B-4D68-81B3-56D6F2323C82}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GptApi", "GptApi\GptApi.csproj", "{ADBB4F03-5F79-41D8-AE1B-642627E60222}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{646D65C6-9B6B-4D68-81B3-56D6F2323C82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{646D65C6-9B6B-4D68-81B3-56D6F2323C82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{646D65C6-9B6B-4D68-81B3-56D6F2323C82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{646D65C6-9B6B-4D68-81B3-56D6F2323C82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADBB4F03-5F79-41D8-AE1B-642627E60222}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADBB4F03-5F79-41D8-AE1B-642627E60222}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADBB4F03-5F79-41D8-AE1B-642627E60222}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADBB4F03-5F79-41D8-AE1B-642627E60222}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8484FD98-47EB-438A-9CB6-CD0F9E6F53F5}
+	EndGlobalSection
+EndGlobal
